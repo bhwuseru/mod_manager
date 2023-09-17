@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DirectoryService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,43 +16,33 @@ class ModController extends Controller
     public function index()
     {
         try {
+            // 準備処理
             $csvFile = public_path('resouces/modlist.csv');
             $publicPath = public_path() . '/storage';
-            $modsPath = $publicPath . '/' . 'mods'; // モッドディレクトリのパス（storage/app以下）
-            $modsDirectories = array_diff(scandir($modsPath), ['.', '..']);
-            $modDirs = [];
+            $modsPath = $publicPath . '/' . 'mods';
+            $mods = [];
 
+            // csv準備処理
             $csvOutputFile = 'mod_directory_list.csv';
             $csvFileHandle = fopen($csvOutputFile, 'w');
             // ヘッダ行をCSVファイルに書き込む
             fputcsv($csvFileHandle, ['mod_directory', 'mod_name']);
 
-            foreach ($modsDirectories as $directory) {
-                // ディレクトリの絶対パスを取得
-                $directoryPath = $modsPath . '/' . $directory;
-                // ディレクトリかどうかを確認し、ディレクトリであれば表示
-                if (is_dir($directoryPath)) {
-                    $modDirInfo = [];
-                    $inModDirictories =  array_diff(scandir($directoryPath), ['.', '..']);
-                    // modディレクトリ内検証
-                    foreach ($inModDirictories as $inModDirictory) {
-                        $inModDirictoryPath  = $directoryPath . '/' . $inModDirictory;
+            $modDirs = DirectoryService::getDirs($modsPath);
+            foreach($modDirs as $dir) {
+                $modDirPath =  $modsPath . DIRECTORY_SEPARATOR. $dir;
+                $pluginFiles = DirectoryService::getFiles($modDirPath, ['esp', 'esl', 'esm']);
+                $mods[$dir] = $pluginFiles;
 
-                        if (!is_dir($inModDirictoryPath)) {
-                            $modFileNameWithExtension = pathinfo($inModDirictory, PATHINFO_FILENAME);
-                            $modFileExtension = pathinfo($inModDirictory, PATHINFO_EXTENSION);
-
-                            // ファイルの拡張子が esp または esl または esm の場合にCSVファイルに書き込む
-                            if (in_array($modFileExtension, ['esp', 'esl', 'esm'])) {
-                                fputcsv($csvFileHandle, [$inModDirictory, $modFileNameWithExtension]);
-                            }
-                        }
-                    }
-                    array_push($modDirs, $directory);
+                foreach($pluginFiles as $file) {
+                                fputcsv($csvFileHandle, [
+                                    'mod_directory' => $dir,
+                                    'mod_name' =>  $file,
+                        ]);
                 }
             }
 
-            return view('mod.index', compact('modDirs'));
+            return view('mod.index', compact('mods'));
         } catch (Exception $e) {
             Log::error($e);
             // return redirect()->route('mods')->with([

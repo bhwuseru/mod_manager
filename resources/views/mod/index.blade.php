@@ -1,9 +1,12 @@
-@if(0 < count($modDirs))
+@if(0 < count($mods))
+@foreach ($mods as $dirName => $pluginFiles)
 <ul>
-@foreach ($modDirs as $mod)
     <li>
-        <a>{{ $mod }}</a>
+        <span>{{ $dirName }}</span>
+        @foreach ($pluginFiles as $file)
+        <a>{{ $file }}</a>
+        @endforeach
     </li>
-@endforeach
 </ul>
+@endforeach
 @endif
