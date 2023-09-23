@@ -60,7 +60,11 @@ class DirectoryService
         return $files;
     }
 
-    public function searchForContainedDirectories(array $dirs) {
-        
+    public function searchForContainedDirectories(array $dirs)
+    {
+    }
+
+    public function containDirectory(string $directoryName)
+    {
     }
 }

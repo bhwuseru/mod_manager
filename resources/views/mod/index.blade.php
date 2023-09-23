@@ -1,12 +1,17 @@
-@if(0 < count($mods))
-@foreach ($mods as $dirName => $pluginFiles)
-<ul>
-    <li>
-        <span>{{ $dirName }}</span>
-        @foreach ($pluginFiles as $file)
-        <a>{{ $file }}</a>
+@if(0 < count($mods)) <table>
+    <thead>
+        <th>名前</th>
+        <th>ClientTool</th>
+        <th>プラグイン</th>
+    </thead>
+    <tbody>
+        @foreach ($mods as $dirName => $body)
+        <tr>
+            <td>{{ $dirName }}</td>
+            <td>{{ empty($body->calienteTools) ? '✘' : '◯' }}</td>
+            <td>{{ 0 < count($body->pluginFiles) ? '◯' : '✗'}}</td>
+        </tr>
         @endforeach
-    </li>
-</ul>
-@endforeach
-@endif
+    </tbody>
+    </table>
+    @endif

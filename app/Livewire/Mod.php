@@ -2,15 +2,18 @@
 
 namespace App\Livewire;
 
+use App\Domains\MetaFile;
 use App\Domains\Mod as DomainsMod;
 use App\Http\Requests\ModSearchRequest;
 use App\Services\DirectoryService;
 use Livewire\Component;
-use MetaFile;
+
+use function PHPUnit\Framework\fileExists;
 
 class Mod extends Component
 {
     public $search = '';
+    public $calienteTools = 'CalienteTools';
     // public $csvFile = public_path('resouces/modlist.csv');
     // public $publicPath = public_path() . '/storage';
     // public $modsPath = $publicPath . '/' . 'mods';
@@ -20,7 +23,8 @@ class Mod extends Component
         return view('livewire.mod');
     }
 
-    public function batch() {
+    public function batch()
+    {
         // $csvFile = public_path('resouces/modlist.csv');
         $publicPath = public_path() . '/storage';
         $modsPath = $publicPath . '/' . 'mods';
@@ -28,7 +32,7 @@ class Mod extends Component
         $modDirs = DirectoryService::getDirs($modsPath);
         $mods = [];
         foreach ($modDirs as $dir) {
-            $modDirPath =  $this->modsPath . DIRECTORY_SEPARATOR . $dir;
+            $modDirPath =  $modsPath . DIRECTORY_SEPARATOR . $dir;
             $metafile = new MetaFile($modDirPath, $dir);
             $pluginFiles = DirectoryService::getIncludedExtensionFiles($modDirPath, ['esp', 'esl', 'esm']);
             $mod = new DomainsMod();
@@ -40,11 +44,12 @@ class Mod extends Component
         }
     }
 
-    public function getMetaFiles() {
-
+    public function getMetaFiles()
+    {
     }
     // public function search(ModSearchRequest $request) {
-    public function search() {
+    public function search()
+    {
         try {
             // 準備処理
             $mods = [];
@@ -61,8 +66,20 @@ class Mod extends Component
             $modDirs = DirectoryService::getDirs($modsPath);
             foreach ($modDirs as $dir) {
                 $modDirPath =  $modsPath . DIRECTORY_SEPARATOR . $dir;
+                $metafilePath  = $modDirPath . DIRECTORY_SEPARATOR . 'meta.init';
+                $metafile = null;
+                if (fileExists($metafilePath)) {
+                    $metafile = new MetaFile($modDirPath, $dir);
+                }
                 $pluginFiles = DirectoryService::getIncludedExtensionFiles($modDirPath, ['esp', 'esl', 'esm']);
-                $mods[$dir] = $pluginFiles;
+                $mod = new DomainsMod();
+                $mod->metafile = $metafile;
+                $mod->pluginFiles = $pluginFiles;
+                $mod->directoryName = $dir;
+                if ($this->calienteTools ===  $dir) {
+                    $mod->calienteTools = $dir;
+                }
+                $mods[$dir] = $mod;
             }
 
             return view('mod.index', compact('mods'));
