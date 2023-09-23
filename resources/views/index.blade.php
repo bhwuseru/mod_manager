@@ -2,4 +2,6 @@
 <div>{{ session('error') }}</div>
 @endif
 
-<a href="{{ route('mods') }}">テスト</a>
+{{-- <form action="{{ route('mod') }}" method="POST"> --}}
+<a href="{{ route('mod') }}">テスト</a>
+{{-- </form> --}}

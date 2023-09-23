@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mods', function (Blueprint $table) {
+        Schema::create('meta_files', function (Blueprint $table) {
             $table->id();
-            $table->string('directory_name', 1000)->unique();
-            $table->unsignedBigInteger('meta_id');
-            $table->string('path', 1000);
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mods');
+        Schema::dropIfExists('meta_files');
     }
 };

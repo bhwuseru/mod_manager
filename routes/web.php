@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ModController;
+use App\Livewire\Mod;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Mods;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::controller(Mod::class)
+    ->prefix('mod')->group(function(){
+        Route::get('/', 'search')->name('mod');
+    });
 
-Route::get('/mods', [ModController::class, 'index'])->name('mods');
+// Route::get('/mod', [Mod::class, 'search'])->name('mod');
+// Route::get('/counter', Counter::class);
 
-Route::get('/', function () {
-    return view('index');
-});
+// Route::get('/', function () {
+//     return view('index');
+// });

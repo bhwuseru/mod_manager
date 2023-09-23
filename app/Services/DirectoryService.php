@@ -33,7 +33,7 @@ class DirectoryService
      * @param array $includeExtensions ファイルの拡張子の配列
      * @return array ファイル名またはファイル名（拡張子なし）の配列
      */
-    public static function getFiles(string $path, array $includeExtensions = []): array
+    public static function getIncludedExtensionFiles(string $path, array $includeExtensions = []): array
     {
         if (!is_dir($path)) return [];
 
@@ -58,5 +58,9 @@ class DirectoryService
             array_push($files, $fileNameWithExtension);
         }
         return $files;
+    }
+
+    public function searchForContainedDirectories(array $dirs) {
+        
     }
 }
