@@ -13,14 +13,14 @@
             <th>プラグイン</th>
         </thead>
         <tbody>
-            @foreach ($mods as $dirName => $mod)
+            @foreach ($mods as $mod)
             @if($mod->isSeparator)
             <tr style="background-color: lightblue;">
                 @else
             <tr>
                 @endif
 
-                <td>{{ $dirName }}</td>
+                <td>{{ $mod->directory_name }}</td>
                 <td>{{ empty($mod->calienteTools) ? '✘' : '◯' }}</td>
                 <td>{{ 0 < count($mod->pluginFiles) ? '◯' : '✗'}}</td>
             </tr>

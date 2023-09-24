@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('version')->nullable();
             $table->string('newest_version')->nullable();
             $table->string('nexus_file_status')->nullable();
-            $table->string('installation_file')->nullable()->comment('modorganizer download file name');
+            $table->longText('installation_file')->nullable()->comment('modorganizer download file name');
             $table->string('url')->nullable();
             $table->boolean('has_custom_url')->default(false);
             $table->string('converted')->default('false');

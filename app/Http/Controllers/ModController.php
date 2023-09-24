@@ -80,7 +80,6 @@ class ModController extends Controller
             $modList = $this->getModlist();
             foreach ($modList as $mod) {
                 $pluginFile = $mod['Mod_Name'];
-                dd($pluginFile);
             }
             foreach ($modDirs as $dirName => $pluginFiles) {
                 foreach ($pluginFiles as $file) {

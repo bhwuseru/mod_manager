@@ -4,6 +4,7 @@ namespace App\Domains;
 
 use App\Models\CategoryModMetafile;
 use App\Models\Mod;
+use App\Models\Plugin;
 use App\Services\DirectoryService;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -45,14 +46,20 @@ class ModDomain
         if (fileExists($dirpath . DIRECTORY_SEPARATOR . 'meta.ini')) {
             $this->metafile = new MetaFileDomain($dirpath);
         }
-        if(fileExists($dirpath . DIRECTORY_SEPARATOR. 'CalienteTools')){
-            if(is_dir($dirpath . DIRECTORY_SEPARATOR. 'CalienteTools')) {
+        if (fileExists($dirpath . DIRECTORY_SEPARATOR . 'CalienteTools')) {
+            if (is_dir($dirpath . DIRECTORY_SEPARATOR . 'CalienteTools')) {
                 $this->containClientTools = true;
             }
         }
 
         // プラグインファイルのリストを取得
-        $this->pluginFiles = DirectoryService::getIncludedExtensionFiles($dirpath, ['esp', 'esl', 'esm']);
+        $pluginFiles = DirectoryService::getIncludedExtensionFiles($dirpath, ['esp', 'esl', 'esm']);
+        foreach ($pluginFiles as $file) {
+            $plugin = new Plugin;
+            $plugin->directory_name = $this->directoryName;
+            $plugin->plugin_name = $file;
+            array_push($this->pluginFiles, $plugin);
+        }
     }
 
     /**
@@ -96,28 +103,33 @@ class ModDomain
         return $dirName;
     }
 
-    public function register() {
-        try{
-        DB::transaction(function () {
-            $mod = Mod::create([
-                'directory_name' => $this->directoryName,
-                'contain_client_tools' => $this->containClientTools,
-                'is_separator' => $this->isSeparator,
-            ]);
-            // dd($mod);
-            $categoris = CategoryModMetafile::where('directory_name', $this->directoryName)->get();
-            if ($categoris->isNotEmpty()) {
-                $categoris->delete();
-            }
+    public function register()
+    {
+        try {
+            DB::transaction(function () {
+                $mod = Mod::create([
+                    'directory_name' => $this->directoryName,
+                    'contain_client_tools' => $this->containClientTools,
+                    'is_separator' => $this->isSeparator,
+                ]);
 
-            if(!is_null($this->metafile)) {
-                $this->metafile->register();
-            }
-        });
-        return true;
-    }catch(Exception $e) {
-        Log::error($e);
-        return false;
-    }
+                foreach($this->pluginFiles as $plugin) {
+                    $plugin->save();
+                }
+                // dd($mod);
+                $categoris = CategoryModMetafile::where('directory_name', $this->directoryName)->get();
+                if ($categoris->isNotEmpty()) {
+                    $categoris->delete();
+                }
+
+                if (!is_null($this->metafile)) {
+                    $this->metafile->register();
+                }
+            });
+            return true;
+        } catch (Exception $e) {
+            Log::error($e);
+            return false;
+        }
     }
 }

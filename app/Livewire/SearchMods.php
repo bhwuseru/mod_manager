@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Domains\ModDomain;
 use App\Http\Requests\ModSearchRequest;
+use App\Models\Mod;
 use App\Services\DirectoryService;
 use Egulias\EmailValidator\Result\Reason\UnclosedComment;
 use Livewire\Component;
@@ -30,14 +31,15 @@ class SearchMods extends Component
             // ヘッダ行をCSVファイルに書き込む
             // fputcsv($csvFileHandle, ['mod_directory', 'mod_name']);
 
-            $modDirs = DirectoryService::getDirs($modsPath);
-            if(1 > count($modDirs)) return view('livewire.search-mods', 'mods');
+            $this->mods = Mod::all();
+            // $modDirs = DirectoryService::getDirs($modsPath);
+            // if(1 > count($modDirs)) return view('livewire.search-mods', 'mods');
 
-            foreach ($modDirs as $dir) {
-                $modDirPath =  $modsPath . DIRECTORY_SEPARATOR . $dir;
-                $mod = new ModDomain($modDirPath);
-                $this->mods[$dir] = $mod;
-            }
+            // foreach ($modDirs as $dir) {
+            //     $modDirPath =  $modsPath . DIRECTORY_SEPARATOR . $dir;
+            //     $mod = new ModDomain($modDirPath);
+            //     $this->mods[$dir] = $mod;
+            // }
 
             return view('livewire.search-mods');
         } catch (Exception $e) {
