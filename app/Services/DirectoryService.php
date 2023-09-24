@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
+
 class DirectoryService
 {
 
@@ -14,16 +17,22 @@ class DirectoryService
     public static function getDirs(string $path): array
     {
         $dirs = [];
-        // ディレクトリ内のファイルおよびディレクトリの一覧を取得
-        $directories =  array_diff(scandir($path), ['.', '..']);
-        foreach ($directories as $directory) {
-            $directoryPath = $path . DIRECTORY_SEPARATOR . $directory;
-            // ディレクトリでない場合はスキップ
-            if (!is_dir($directoryPath)) continue;
-            // ディレクトリ名を配列に追加
-            array_push($dirs, $directory);
+        try{
+            // ディレクトリ内のファイルおよびディレクトリの一覧を取得
+            $directories =  array_diff(scandir($path), ['.', '..']);
+            foreach ($directories as $directory) {
+                $directoryPath = $path . DIRECTORY_SEPARATOR . $directory;
+                // ディレクトリでない場合はスキップ
+                if (!is_dir($directoryPath)) continue;
+                // ディレクトリ名を配列に追加
+                array_push($dirs, $directory);
+            }
+            return $dirs;
+
+        } catch(Exception $e) {
+            Log::error($e);
+            return [];
         }
-        return $dirs;
     }
 
     /**

@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('category_mod_metafile', function (Blueprint $table) {
             $table->id();
-            $table->string('directory_name')->unique();
+            $table->string('directory_name');
+            $table->unsignedBigInteger('mod_id')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('mod_metafile_id');
             $table->integer('sortno'); // ソート順を保持するカラム
 
             // 外部キー制約
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('mod_metafile_id')->references('id')->on('mod_metafiles');
+            // $table->foreign('mod_id')->references('id')->on('mods');
+            // $table->foreign('category_id')->references('id')->on('categories');
+            // $table->foreign('mod_metafile_id')->references('id')->on('mod_metafiles');
 
             $table->timestamps();
         });

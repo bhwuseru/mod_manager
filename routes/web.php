@@ -3,7 +3,7 @@
 use App\Http\Controllers\ModController;
 use App\Livewire\Mod;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Mods;
+use App\Livewire\SearchMods;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,14 +16,15 @@ use App\Livewire\Mods;
 |
 */
 
-Route::controller(Mod::class)
+Route::controller(SearchMods::class)
     ->prefix('mod')->group(function(){
-        Route::get('/', 'search')->name('mod');
+        Route::match(['get', 'post'], '/', 'render')->name('mod');
     });
+Route::get('/reg', [SearchMods::class, 'batch'])->name('reg');
 
 // Route::get('/mod', [Mod::class, 'search'])->name('mod');
 // Route::get('/counter', Counter::class);
 
-// Route::get('/', function () {
-//     return view('index');
-// });
+Route::get('/', function () {
+    return view('index');
+});

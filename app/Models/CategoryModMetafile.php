@@ -13,6 +13,7 @@ class CategoryModMetafile extends Model
 
     protected $fillable = [
         'directory_name',
+        'mod_id',
         'category_id',
         'mod_metafile_id',
         'sortno',

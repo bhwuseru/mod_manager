@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            $table->integer('category_id')->nullable();
             $table->string('category_name', 100);
             $table->unsignedBigInteger('mod_id')->unique();
             $table->unsignedBigInteger('nexusmod_id')->nullable();
