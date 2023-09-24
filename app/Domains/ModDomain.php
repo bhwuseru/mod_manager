@@ -3,7 +3,12 @@
 namespace App\Domains;
 
 use App\Models\CategoryModMetafile;
+use App\Models\Mod;
 use App\Services\DirectoryService;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Stmt\Catch_;
 
 use function PHPUnit\Framework\fileExists;
 
@@ -19,7 +24,7 @@ class ModDomain
     public MetaFileDomain | null $metafile;
 
     // Caliente Tools の情報
-    public string $calienteTools = '';
+    public bool $containClientTools = false;
     public array $categories = [];
 
     // セパレーターが存在するかどうかのフラグ
@@ -39,6 +44,11 @@ class ModDomain
         $this->metafile = null;
         if (fileExists($dirpath . DIRECTORY_SEPARATOR . 'meta.ini')) {
             $this->metafile = new MetaFileDomain($dirpath);
+        }
+        if(fileExists($dirpath . DIRECTORY_SEPARATOR. 'CalienteTools')){
+            if(is_dir($dirpath . DIRECTORY_SEPARATOR. 'CalienteTools')) {
+                $this->containClientTools = true;
+            }
         }
 
         // プラグインファイルのリストを取得
@@ -87,13 +97,27 @@ class ModDomain
     }
 
     public function register() {
-        $categoris = CategoryModMetafile::where('directory_name', $this->directoryName)->get();
-        if ($categoris->isNotEmpty()) {
-            $categoris->delete();
-        }
+        try{
+        DB::transaction(function () {
+            $mod = Mod::create([
+                'directory_name' => $this->directoryName,
+                'contain_client_tools' => $this->containClientTools,
+                'is_separator' => $this->isSeparator,
+            ]);
+            // dd($mod);
+            $categoris = CategoryModMetafile::where('directory_name', $this->directoryName)->get();
+            if ($categoris->isNotEmpty()) {
+                $categoris->delete();
+            }
 
-        if(!is_null($this->metafile)) {
-            $this->metafile->register();
-        }
+            if(!is_null($this->metafile)) {
+                $this->metafile->register();
+            }
+        });
+        return true;
+    }catch(Exception $e) {
+        Log::error($e);
+        return false;
+    }
     }
 }

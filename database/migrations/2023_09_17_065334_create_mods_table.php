@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('mods', function (Blueprint $table) {
             $table->id();
             $table->string('directory_name', 1000)->unique();
-            $table->unsignedBigInteger('meta_id');
-            $table->string('path', 1000);
+            $table->boolean('contain_client_tools')->default(false);
+            $table->boolean('is_separator')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
