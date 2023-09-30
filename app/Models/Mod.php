@@ -15,4 +15,7 @@ class Mod extends Model
         'contain_client_tools',
         'is_separator',
     ];
+
+    public function category() {
+    }
 }

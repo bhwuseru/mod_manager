@@ -13,5 +13,7 @@ class Plugin extends Model
     protected $fillable = [
         'directory_name',
         'plugin_name',
+        'extension',
+        'basename',
     ];
 }

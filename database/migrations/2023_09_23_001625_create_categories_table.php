@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('category_id')->nullable();
             $table->string('category_name', 100);
-            $table->unsignedBigInteger('mod_id')->unique();
             $table->unsignedBigInteger('nexusmod_id')->nullable();
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->integer('category_type')->comment('1: nexus 2: custom');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

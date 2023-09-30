@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 
 class DirectoryService
 {
@@ -64,9 +66,24 @@ class DirectoryService
 
             if (!in_array($fileExtension, $includeExtensions)) continue;
             // ファイル名（拡張子なし）を配列に追加
-            array_push($files, $fileNameWithExtension);
+            array_push($files, pathinfo($directory));
         }
         return $files;
+    }
+
+    public static function searchFiles(string $dirPath, string $filename): array {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $pathInfo = pathinfo($file);
+                if($pathInfo['basename'] == $filename) {
+                    return $pathInfo;
+                }
+            }
+        }
+
+        return [];
     }
 
     public function searchForContainedDirectories(array $dirs)

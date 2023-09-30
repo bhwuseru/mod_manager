@@ -30,6 +30,9 @@ class ModDomain
 
     // セパレーターが存在するかどうかのフラグ
     public bool $isSeparator = false;
+    public string $modName = '';
+    public string $name = '';
+    public DownloadDomain $downloadDomain;
 
     /**
      * ModDomain コンストラクタ
@@ -55,11 +58,19 @@ class ModDomain
         // プラグインファイルのリストを取得
         $pluginFiles = DirectoryService::getIncludedExtensionFiles($dirpath, ['esp', 'esl', 'esm']);
         foreach ($pluginFiles as $file) {
+            // $plugin = new PluginDomain;
             $plugin = new Plugin;
             $plugin->directory_name = $this->directoryName;
-            $plugin->plugin_name = $file;
+            $plugin->plugin_name = $file['filename'];
+            $plugin->extension = $file['extension'];
+            $plugin->basename = $file['basename'];
+
             array_push($this->pluginFiles, $plugin);
         }
+    }
+
+    public function setDownload(string $downloadPath) {
+        $this->downloadDomain = new DownloadDomain($downloadPath, $this->metafile->installationFile);
     }
 
     /**
@@ -107,24 +118,32 @@ class ModDomain
     {
         try {
             DB::transaction(function () {
-                $mod = Mod::create([
+                $mod = Mod::where('directory_name', $this->directoryName)->get();
+                if($mod->isNotEmpty()) {
+                    $mod->delete();
+                }
+                Mod::create([
                     'directory_name' => $this->directoryName,
                     'contain_client_tools' => $this->containClientTools,
                     'is_separator' => $this->isSeparator,
                 ]);
 
+                $pliginFiles = Plugin::where('directory_name')->get();
+                if($pliginFiles->isNotEmpty()){
+                    $pliginFiles->delete();
+                }
                 foreach($this->pluginFiles as $plugin) {
                     $plugin->save();
                 }
-                // dd($mod);
+
                 $categoris = CategoryModMetafile::where('directory_name', $this->directoryName)->get();
                 if ($categoris->isNotEmpty()) {
                     $categoris->delete();
                 }
-
                 if (!is_null($this->metafile)) {
                     $this->metafile->register();
                 }
+
             });
             return true;
         } catch (Exception $e) {
@@ -132,4 +151,5 @@ class ModDomain
             return false;
         }
     }
+
 }

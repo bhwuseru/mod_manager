@@ -6,7 +6,7 @@
             <input type="text" wire:model='searchModName' name="directory_name">
         </label>
     </form>
-    @if(0 < count($mods)) <table>
+    <table>
         <thead>
             <th>名前</th>
             <th>ClientTool</th>
@@ -15,18 +15,16 @@
         <tbody>
             @foreach ($mods as $mod)
             @if($mod->isSeparator)
-            <tr style="background-color: lightblue;">
-                @else
-            <tr>
-                @endif
-
-                <td>{{ $mod->directory_name }}</td>
-                <td>{{ empty($mod->calienteTools) ? '✘' : '◯' }}</td>
-                <td>{{ 0 < count($mod->pluginFiles) ? '◯' : '✗'}}</td>
+                <tr style="background-color: lightblue;">
+            @else
+                <tr>
+            @endif
+            <td>{{ $mod->directoryName}}</td>
+                {{-- <td>{{ $mod->containClientTools  ? '◯' : '✘' }}</td> --}}
+                {{-- <td>{{ $mod->pluginFiles->isEmpty() ? '◯' : '✗'}}</td> --}}
             </tr>
             @endforeach
         </tbody>
         </table>
-        @endif
 
 </div>

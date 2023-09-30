@@ -1,11 +1,6 @@
-@if(session('error'))
+{{-- @if(session('error'))
 <div>{{ session('error') }}</div>
 @endif
-
-<body>
-    @livewire('search-mods')
-</body>
-
-{{-- <form action="{{ route('mod') }}" method="POST"> --}}
+@livewire('search-mods')
 <a href="{{ route('mod') }}">テスト</a>
-{{-- </form> --}}
+ --}}

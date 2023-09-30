@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('directory_name');
             $table->string('plugin_name');
+            $table->string('extension');
+            $table->string('basename');
             $table->softDeletes();
             $table->timestamps();
         });
