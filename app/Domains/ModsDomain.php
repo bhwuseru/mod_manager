@@ -2,6 +2,7 @@
 namespace App\Domains;
 
 use App\Services\CsvReaderService;
+use App\Services\CsvWriterService;
 use App\Services\DirectoryService;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -25,8 +26,32 @@ class ModsDomain {
             foreach ($modDirs as $dir) {
                 $modDirPath =  $modsPath . DIRECTORY_SEPARATOR . $dir;
                 $mod = new ModDomain($modDirPath);
+                $mod->register();
+
                 if(!empty($downloadPath)) {
-                    $mod->setDownload($downloadPath);
+                    if(empty($mod->metafile->modMetafile)) continue;
+                    if(is_null($mod->metafile) ) continue;
+                    if(empty($mod->metafile->installationFile)) continue;
+
+                    echo $mod->metafile->installationFile . PHP_EOL;
+                    // $mod->setDownload($downloadPath, $mod->metafile->installationFile);
+                    // $csv_header = [
+                    //     'mod_name',
+                    //     'mod_dir_path',
+                    //     'mod_installation_file',
+                    //     'mod_download_path',
+                    //     'mod_directory_name',
+                    // ];
+                    // if(file_exists(public_path('mods.csv')))
+                    // $csv = new CsvWriterService(public_path('test.csv'));
+
+                    // $data = $mod->downloadDomain->modName . ',' .
+                    // $mod->modDirPath . ',' .
+                    // $mod->metafile->installationFile . ',' .
+                    // $mod->downloadDomain->downloadPath . ',' .
+                    // $mod->getDirectoryName();
+
+                    // $csv->appendToCsv($data, $csv_header);
                 }
                 array_push($this->mods, $mod);
             }
@@ -37,14 +62,20 @@ class ModsDomain {
 
     }
 
-    public function findModName(string $directoryName): ModDomain | null {
-
-        foreach($this->mods as $mod) {
-            if(!$mod instanceof ModDomain) break;
-            if($mod->modName == $directoryName) return $mod;
+    public function register() {
+        foreach ($this->mods as $mod) {
+            $mod->register();
         }
-
-        return null;
     }
+
+    // public function findModName(string $directoryName): ModDomain | null {
+
+    //     foreach($this->mods as $mod) {
+    //         if(!$mod instanceof ModDomain) break;
+    //         if($mod->modName == $directoryName) return $mod;
+    //     }
+
+    //     return null;
+    // }
 
 }

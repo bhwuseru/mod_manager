@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpParser\Node\Stmt\Catch_;
+use Symfony\Component\Translation\Dumper\CsvFileDumper;
 
 use function PHPUnit\Framework\fileExists;
 
@@ -30,9 +31,8 @@ class ModDomain
 
     // セパレーターが存在するかどうかのフラグ
     public bool $isSeparator = false;
-    public string $modName = '';
-    public string $name = '';
     public DownloadDomain $downloadDomain;
+    public string $modDirPath;
 
     /**
      * ModDomain コンストラクタ
@@ -41,19 +41,25 @@ class ModDomain
      */
     public function __construct(string $dirpath)
     {
+        if(!is_dir($dirpath)) {
+            throw new Exception('ModDomain Error:  Not a directory: dirpath: ' . $dirpath);
+        }
+
         // ディレクトリ名を生成
         $this->directoryName = $this->createDirectoryName($dirpath);
-
         // meta.ini ファイルが存在する場合、MetaFileDomain インスタンスを作成
         $this->metafile = null;
         if (fileExists($dirpath . DIRECTORY_SEPARATOR . 'meta.ini')) {
             $this->metafile = new MetaFileDomain($dirpath);
         }
+
         if (fileExists($dirpath . DIRECTORY_SEPARATOR . 'CalienteTools')) {
             if (is_dir($dirpath . DIRECTORY_SEPARATOR . 'CalienteTools')) {
                 $this->containClientTools = true;
             }
         }
+
+        $this->modDirPath = $dirpath;
 
         // プラグインファイルのリストを取得
         $pluginFiles = DirectoryService::getIncludedExtensionFiles($dirpath, ['esp', 'esl', 'esm']);
@@ -69,8 +75,12 @@ class ModDomain
         }
     }
 
-    public function setDownload(string $downloadPath) {
-        $this->downloadDomain = new DownloadDomain($downloadPath, $this->metafile->installationFile);
+    public function setDownload(string $downloadPath, string $installationFile) {
+        $this->downloadDomain = new DownloadDomain($downloadPath, $installationFile);
+    }
+
+    public function appendCsvContent($csvFilePath) {
+
     }
 
     /**

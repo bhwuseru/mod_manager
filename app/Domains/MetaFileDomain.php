@@ -100,7 +100,7 @@ class MetaFileDomain
      *
      * @param string $dirPath ディレクトリのパス
      */
-    public function __construct(string $dirPath)
+    public function __construct(string $dirPath, string $downloadPath = '')
     {
         if (!is_dir($dirPath)) {
             throw new Exception("MetaFileDomain: 引数dirPath:  {$dirPath}がディレクトリではありません");
@@ -198,7 +198,9 @@ class MetaFileDomain
                     if (strpos($key, "%") !== false) {
                         continue;
                     }
-
+                    if($key === 'installationFile') {
+                        echo $key . ': ' . $value . PHP_EOL;
+                    }
                     $key = preg_replace('/^1\\\/', '', $key);
 
                     // カラム名をローワーキャメルケースからスネークケースに変換

@@ -67,6 +67,7 @@ class SearchMods extends Component
             $categoryDomain->postCsvData($categoryCsv);
             $activePlugins = [];
             $notPluginFiles = [];
+            $activeMods = [];
 
             foreach($csvContents as $row) {
                 $mod = $modsDoamin->findModName($row['Mod_Name']);
@@ -74,15 +75,25 @@ class SearchMods extends Component
                     array_push($notPluginFiles[$row['Mod_Name']]);
                     continue;
                 }
+                $activeMods[] = $mod;
 
-                foreach($mod->pluginFiles as $plugin) {
-                    if(!$plugin instanceof Plugin) continue;
-                    array_push($activePlugins, $plugin->basename);
-                }
+                // foreach($mod->pluginFiles as $plugin) {
+                //     if(!$plugin instanceof Plugin) continue;
+                //     array_push($activePlugins, $plugin->basename);
+                // }
+
             }
-            $modDirs = DirectoryService::getDirs($modsPath);
-            $notPluginFiles = [];
-            $extistPluginFiles = [];
+            $newContent = '';
+            foreach($activeMods as $mod) {
+                $newContent .= $mod->getDirectoryName() . PHP_EOL;
+                // ファイルに新しい内容を追加する
+            }
+            if(!empty($newContent)) {
+                $result = file_put_contents(public_path('output.txt'), $newContent, FILE_APPEND);
+            }
+            // $modDirs = DirectoryService::getDirs($modsPath);
+            // $notPluginFiles = [];
+            // $extistPluginFiles = [];
             // foreach ($modDirs as $dir) {
             //     $modDirPath =  $modsPath . DIRECTORY_SEPARATOR . $dir;
             //     $mod = new ModDomain($modDirPath);
